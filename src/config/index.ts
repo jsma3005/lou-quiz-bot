@@ -1,0 +1,19 @@
+import { BotConfig } from '../types'
+import dotenv from 'dotenv'
+
+dotenv.config()
+
+export const config: BotConfig = {
+  BOT_TOKEN: process.env.BOT_TOKEN || '',
+  WEBAPP_URL: process.env.WEBAPP_URL || '',
+}
+
+export const validateConfig = () => {
+  if (!config.BOT_TOKEN) {
+    throw new Error('BOT_TOKEN is required')
+  }
+
+  if (!config.WEBAPP_URL) {
+    throw new Error('WEBAPP_URL is required')
+  }
+}
