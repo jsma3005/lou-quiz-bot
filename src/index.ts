@@ -1,6 +1,6 @@
 import { Bot } from 'grammy'
 import { config, validateConfig } from './config'
-import { handleStart } from './commands'
+import { handleDev, handleStart } from './commands'
 
 // Проверяем конфигурацию
 validateConfig()
@@ -10,6 +10,7 @@ const bot = new Bot(config.BOT_TOKEN)
 
 // Регистрируем команды
 bot.command('start', handleStart)
+bot.command('dev', handleDev)
 
 // Обработка ошибок
 bot.catch((err) => {
