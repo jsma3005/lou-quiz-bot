@@ -20,3 +20,28 @@ export interface ConversationState {
   step: 'idle' | 'awaiting_fullname' | 'awaiting_course' | 'awaiting_test' | 'awaiting_screenshot'
   paymentData: Partial<PaymentData>
 }
+
+export interface QuizQuestion {
+  id: string
+  questionText: string
+  options: string[]
+  correctAnswer: string
+}
+
+export interface Quiz {
+  id: string
+  title: string
+  collectionId: string
+  collectionName: string
+  course: number
+  created: string
+  description: string
+  discipline: string
+  group: string
+  questions: QuizQuestion[]
+  updated: string
+}
+
+export interface ApiResponse {
+  items: Quiz[]
+}
