@@ -6,6 +6,7 @@ dotenv.config()
 export const config: BotConfig = {
   BOT_TOKEN: process.env.BOT_TOKEN || '',
   WEBAPP_URL: process.env.WEBAPP_URL || '',
+  DEVAPP_URL: process.env.DEVAPP_URL || '',
 }
 
 export const validateConfig = () => {
@@ -15,5 +16,9 @@ export const validateConfig = () => {
 
   if (!config.WEBAPP_URL) {
     throw new Error('WEBAPP_URL is required')
+  }
+
+  if (!config.DEVAPP_URL) {
+    throw new Error('DEVAPP is required')
   }
 }

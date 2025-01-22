@@ -1,6 +1,7 @@
 import { InlineKeyboard } from 'grammy'
+import { config } from '../config'
 
 export const getTestWebAppKeyboard = () => {
   return new InlineKeyboard()
-    .webApp('Начни проходить тесты', 'https://301e-92-245-115-23.ngrok-free.app/')
+    .webApp('Начни проходить тесты', config.DEVAPP_URL)
 }
