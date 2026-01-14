@@ -3,7 +3,7 @@ import { Bot } from 'grammy'
 import { config, validateConfig } from './config'
 import { handleDev, handleStart, handlePay } from './commands'
 import { handlePaymentFlow } from './handlers/payment'
-import { handleApprovePayment, handleRejectPayment, handleSendMessage } from './handlers/admin'
+import { handleApprovePayment, handleRejectPayment, handleSendMessage, handleSendAll } from './handlers/admin'
 import { handlePayButton } from './commands/start'
 import { handleFeatures } from './commands/features'
 import { handleSupport } from './commands/support'
@@ -26,6 +26,7 @@ bot.callbackQuery('support_command', handleSupport)
 bot.command('approve', handleApprovePayment)
 bot.command('reject', handleRejectPayment)
 bot.command('send', handleSendMessage)
+bot.command('sendall', handleSendAll)
 
 // Обрабатываем сообщения для процесса оплаты
 bot.on('message', handlePaymentFlow)

@@ -1,6 +1,7 @@
 // src/handlers/admin.ts
 import { Context } from 'grammy'
 import { config } from '../config'
+import { getAllStudents } from '../services/api'
 
 // Функция для проверки, является ли чат группой администраторов
 const isAdminGroup = (ctx: Context): boolean => {
@@ -163,4 +164,70 @@ export const handleSendMessage = async (ctx: Context) => {
       '⚠️ Произошла ошибка при отправке сообщения пользователю'
     )
   }
+}
+
+// Обработчик команды массовой рассылки сообщений
+export const handleSendAll = async (ctx: Context) => {
+  if (!isAdminGroup(ctx)) {
+    await ctx.reply('Эта команда доступна только в группе администраторов')
+    return
+  }
+
+  // Получаем текст сообщения (текст после команды)
+  const messageText = ctx.message?.text?.split('/sendall ')[1]
+  
+  if (!messageText) {
+    await ctx.reply(
+      'Пожалуйста, укажите текст сообщения после команды /sendall\n\n' +
+      'Пример: /sendall Привет всем! Это важное объявление.'
+    )
+    return
+  }
+
+  await ctx.reply('⏳ Получаю список пользователей...')
+
+  // Получаем список студентов из PocketBase
+  const students = await getAllStudents()
+  
+  // Извлекаем uid (Telegram ID) из каждого студента
+  const userIds = students
+    .map(student => student.uid)
+    .filter(id => id) // Фильтруем пустые значения
+
+  if (userIds.length === 0) {
+    await ctx.reply('❌ Список пользователей пуст')
+    return
+  }
+
+  await ctx.reply(
+    `📤 Начинаю рассылку сообщения для ${userIds.length} пользователей...`
+  )
+
+  let successCount = 0
+  let failCount = 0
+  const failedUsers: string[] = []
+
+  for (const userId of userIds) {
+    try {
+      await ctx.api.sendMessage(userId, messageText)
+      successCount++
+      // Небольшая задержка между отправками для избежания rate limit
+      await new Promise(resolve => setTimeout(resolve, 50))
+    } catch (error) {
+      console.error(`Error sending message to user ${userId}:`, error)
+      failCount++
+      failedUsers.push(userId)
+    }
+  }
+
+  // Отчет о результатах рассылки
+  let resultMessage = `📊 Рассылка завершена!\n\n` +
+    `✅ Успешно отправлено: ${successCount}\n` +
+    `❌ Не удалось отправить: ${failCount}`
+
+  if (failedUsers.length > 0) {
+    resultMessage += `\n\n⚠️ ID пользователей с ошибками:\n${failedUsers.join(', ')}`
+  }
+
+  await ctx.reply(resultMessage)
 }
