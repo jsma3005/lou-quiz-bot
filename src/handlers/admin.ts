@@ -10,16 +10,18 @@ const isAdminGroup = (ctx: Context): boolean => {
 
 // Функция для извлечения данных пользователя из текста сообщения
 const extractUserData = (text: string) => {
-  // Ищем ID пользователя в тексте сообщения
-  const userIdMatch = text.match(/ID пользователя: (\d+)/)
+  // Ищем ID пользователя в тексте сообщения (поддержка старого и нового формата)
+  const userIdMatch = text.match(/(?:🆔 )?ID пользователя: (\d+)/)
   if (!userIdMatch) return null
 
-  // Ищем выбранные тесты
+  // Ищем тест (новый формат с эмодзи 📚)
+  const testMatch = text.match(/📚 Тест: (.+)/)
+  // Ищем выбранные тесты (старый формат)
   const testsMatch = text.match(/Выбранные тесты: (.+)\n/)
   
   return {
     userId: userIdMatch[1],
-    tests: testsMatch ? testsMatch[1] : 'не указаны'
+    tests: testMatch ? testMatch[1] : (testsMatch ? testsMatch[1] : 'не указаны')
   }
 }
 
@@ -31,14 +33,18 @@ export const handleApprovePayment = async (ctx: Context) => {
   }
 
   // Проверяем, что команда была отправлена в ответ на сообщение
-  if (!ctx.message?.reply_to_message?.text) {
+  // Поддержка text (обычное сообщение) и caption (сообщение с фото)
+  const replyMessage = ctx.message?.reply_to_message
+  const messageText = replyMessage?.text || replyMessage?.caption
+  
+  if (!messageText) {
     await ctx.reply(
       'Эта команда должна быть отправлена в ответ на сообщение о платеже'
     )
     return
   }
 
-  const userData = extractUserData(ctx.message.reply_to_message.text)
+  const userData = extractUserData(messageText)
   if (!userData) {
     await ctx.reply('Не удалось найти информацию о пользователе в сообщении')
     return
@@ -78,14 +84,18 @@ export const handleRejectPayment = async (ctx: Context) => {
   const reason = ctx.message?.text?.split('/reject ')[1] || 'Причина не указана'
 
   // Проверяем, что команда была отправлена в ответ на сообщение
-  if (!ctx.message?.reply_to_message?.text) {
+  // Поддержка text (обычное сообщение) и caption (сообщение с фото)
+  const replyMessage = ctx.message?.reply_to_message
+  const replyText = replyMessage?.text || replyMessage?.caption
+  
+  if (!replyText) {
     await ctx.reply(
       'Эта команда должна быть отправлена в ответ на сообщение о платеже'
     )
     return
   }
 
-  const userData = extractUserData(ctx.message.reply_to_message.text)
+  const userData = extractUserData(replyText)
   if (!userData) {
     await ctx.reply('Не удалось найти информацию о пользователе в сообщении')
     return
@@ -133,14 +143,18 @@ export const handleSendMessage = async (ctx: Context) => {
   }
 
   // Проверяем, что команда была отправлена в ответ на сообщение
-  if (!ctx.message?.reply_to_message?.text) {
+  // Поддержка text (обычное сообщение) и caption (сообщение с фото)
+  const replyMessage = ctx.message?.reply_to_message
+  const replyText = replyMessage?.text || replyMessage?.caption
+  
+  if (!replyText) {
     await ctx.reply(
       'Эта команда должна быть отправлена в ответ на сообщение о платеже'
     )
     return
   }
 
-  const userData = extractUserData(ctx.message.reply_to_message.text)
+  const userData = extractUserData(replyText)
   if (!userData) {
     await ctx.reply('Не удалось найти информацию о пользователе в сообщении')
     return

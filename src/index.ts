@@ -1,8 +1,7 @@
 // src/index.ts
 import { Bot } from 'grammy'
 import { config, validateConfig } from './config'
-import { handleDev, handleStart, handlePay } from './commands'
-import { handlePaymentFlow } from './handlers/payment'
+import { handleDev, handleStart } from './commands'
 import { handleApprovePayment, handleRejectPayment, handleSendMessage, handleSendAll } from './handlers/admin'
 import { handlePayButton } from './commands/start'
 import { handleFeatures } from './commands/features'
@@ -15,7 +14,6 @@ const bot = new Bot(config.BOT_TOKEN)
 // Регистрируем команды
 bot.command('start', handleStart)
 bot.command('dev', handleDev)
-bot.command('pay', handlePay)
 
 // Обработчик для inline кнопок
 bot.callbackQuery('pay_command', handlePayButton)
@@ -27,9 +25,6 @@ bot.command('approve', handleApprovePayment)
 bot.command('reject', handleRejectPayment)
 bot.command('send', handleSendMessage)
 bot.command('sendall', handleSendAll)
-
-// Обрабатываем сообщения для процесса оплаты
-bot.on('message', handlePaymentFlow)
 
 // Обработка ошибок
 bot.catch((err) => {

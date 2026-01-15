@@ -1,7 +1,7 @@
 // src/commands/start.ts
-import { CommandContext, Context } from 'grammy'
+import { CommandContext, Context, InlineKeyboard } from 'grammy'
 import { getStartKeyboard } from '../keyboards/start'
-import { handlePay } from './pay'
+import { config } from '../config'
 
 export const handleStart = async (ctx: CommandContext<Context>) => {
   await ctx.reply(
@@ -17,10 +17,17 @@ export const handleStart = async (ctx: CommandContext<Context>) => {
   )
 }
 
-// Создаем обработчик для кнопки оплаты
+// Обработчик для кнопки получения доступа к тестам
 export const handlePayButton = async (ctx: Context) => {
-  // Удаляем инлайн клавиатуру после нажатия
   await ctx.answerCallbackQuery()
-  // Запускаем процесс оплаты
-  await handlePay(ctx as CommandContext<Context>)
+  
+  const keyboard = new InlineKeyboard()
+    .webApp('🚀 Запустить приложение', config.WEBAPP_URL)
+  
+  await ctx.reply(
+    'Для получения доступа и прохождения тестов, запустите приложение и на главной странице нажмите на кнопку "Получение доступа к тесту"',
+    {
+      reply_markup: keyboard,
+    }
+  )
 }

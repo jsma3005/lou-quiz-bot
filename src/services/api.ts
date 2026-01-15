@@ -1,22 +1,6 @@
 import axios from 'axios'
-import { ApiResponse, Quiz } from '../types'
 
 const POCKETBASE_URL = 'https://lou-app.ru'
-
-export const getAvailableQuizzes = async (): Promise<Quiz[]> => {
-  try {
-    const response = await axios.get<ApiResponse>(`${POCKETBASE_URL}/api/collections/quizzes/records`, {
-      params: {
-        sort: '-created',
-      },
-    })
-
-    return response.data.items
-  } catch (error) {
-    console.error('Error fetching quizzes:', error)
-    return []
-  }
-}
 
 // Интерфейс для студента из PocketBase
 export interface Student {
